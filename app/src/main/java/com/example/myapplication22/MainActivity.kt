@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     var dateText : LocalDate = LocalDate.now()
     @RequiresApi(Build.VERSION_CODES.O)
-    lateinit var table : TableLayout
+    lateinit var table : LinearLayout
     lateinit var enterBtn : Button
     lateinit var enterText : TextView
     lateinit var completeBtn : Button
