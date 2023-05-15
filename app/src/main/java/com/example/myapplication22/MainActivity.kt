@@ -4,9 +4,12 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.view.marginTop
@@ -28,8 +31,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var myHelper : TodoListDBHelper
     lateinit var initBtn : Button
     lateinit var sqlDB : SQLiteDatabase
+    lateinit var todoList : TodoList
 
     @RequiresApi(Build.VERSION_CODES.O)
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -40,39 +46,50 @@ class MainActivity : AppCompatActivity() {
         enterText = findViewById(R.id.inputText) // 리스트 입력칸
         completeBtn = findViewById(R.id.complete)
         initBtn = findViewById(R.id.initBtn)
-        var todoList = ArrayList<RadioButton>()
-        var rButton = ArrayList<RadioButton>()
+        todoList = TodoList()
+        var textList = ArrayList<TextView>()
 
         // db helper객체 생성
         myHelper = TodoListDBHelper(this)
 
-        // todolist테이블을 참조하여 테이블 정보를 가져와 생성
-
+        // 텍스트를 가져오고 Todo객체 생성 및 TodoList에 add
+        // TextView 생성 및 X버튼, 완료 버튼 생성
+        // X버튼과 완료 버튼에 Listener달기
         enterBtn.setOnClickListener {
-//            val row = TableRow(this)
-//            val radioBtn = RadioButton(this)
-//            if(enterText.text.length > 0){
-//                radioBtn.text = enterText.text
-//                enterText.text = ""
-//                radioBtn.textSize=25f
-//                todoList.add(radioBtn)
-//                row.addView(radioBtn)
-//                table.addView(row)
-//            }
+            sqlDB = myHelper.writableDatabase
+            var value = enterText.text.toString()
+            sqlDB.execSQL("INSERT INTO todolist VALUES ('" + value + "');")
+            sqlDB.close()
+            Toast.makeText(applicationContext, "입력 완료", Toast.LENGTH_SHORT)
+            // LinearLayout생성
+            val ll = LinearLayout(this)
+            ll.orientation = LinearLayout.HORIZONTAL
+            ll.layoutParams=LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+
+            // TextView 생성
+            val content = createTextView(value)
+
+            // Imagebutton생성
+            val delBtn = createDelBtn()
+
+            // SucBtn생성
+            val successBtn = createSucBtn()
+
+            enterText.text = ""
+
+
+            ll.addView(delBtn)
+            ll.addView(content)
+            ll.addView(successBtn)
+            table.addView(ll)
         }
 
         // 리스트 삭제 및 완료 테이블 갱신
         completeBtn.setOnClickListener {
-//            var size = todoList.size
-//            for(i in size - 1 downTo 0){
-//                if(todoList[i].isChecked == true){
-//                    var row : TableRow = todoList[i].parent as TableRow
-//                    var table : LinearLayout = row.parent as LinearLayout
-//                    row.removeView(todoList[i])
-//                    table.removeView(row)
-//                    todoList.remove(todoList[i])
-//                }
-//            }
+
         }
 
         initBtn.setOnClickListener {
@@ -80,6 +97,31 @@ class MainActivity : AppCompatActivity() {
             myHelper.onUpgrade(sqlDB, 1, 2)
             sqlDB.close()
         }
+    }
+
+    fun createTextView(value : String) : TextView{
+        val text : TextView = TextView(this)
+        text.gravity = Gravity.CENTER
+        text.text = value
+        text.textSize = 20f
+
+        return text
+    }
+
+    fun createDelBtn() : ImageButton{
+        val delete : ImageButton = ImageButton(this)
+        delete.setImageResource(R.drawable.close)
+        delete.scaleType= ImageView.ScaleType.FIT_CENTER
+        delete.setBackgroundColor(Color.WHITE)
+
+        return delete
+    }
+
+    fun createSucBtn() : Button{
+        val sucBtn = Button(this)
+        sucBtn.text = "완료"
+
+        return sucBtn
     }
 
     fun createList() : ArrayList<String> {

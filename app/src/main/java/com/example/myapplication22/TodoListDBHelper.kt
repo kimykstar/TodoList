@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 // todolist를 관리하기 위한 class
-class TodoListDBHelper(context : Context) : SQLiteOpenHelper(context, "todolist", null, 1){
+class TodoListDBHelper(context : Context) : SQLiteOpenHelper(context, "databases", null, 1){
     override fun onCreate(p0 : SQLiteDatabase?){
         p0!!.execSQL("CREATE TABLE todolist(list text PRIMARY KEY);")
     }

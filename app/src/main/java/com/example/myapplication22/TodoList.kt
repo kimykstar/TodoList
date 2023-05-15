@@ -2,18 +2,21 @@ package com.example.myapplication22
 
 class TodoList {
 
-    private var todolist = ArrayList<String>()
+    private var todoList = ArrayList<Todo>()
 
-    fun getAllList() : ArrayList<String>{
-        return todolist
+    constructor(){}
+
+    // Todo의 모든 항목들을 가져온다.
+    fun getAllList() : ArrayList<Todo>{
+        return todoList
     }
-
-    fun getTodo(todo : String){
-        todolist.add(todo)
+    // Todo의 항목 하나를 추가한다.
+    fun addTodo(todo : Todo){
+        todoList.add(todo)
     }
-
-    fun removeTodo(todo : String){
-        todolist.remove(todo)
+    // Todo의 항목 하나를 삭제한다.
+    fun removeTodo(todo : Todo){
+        todoList.remove(todo);
     }
 
 }
