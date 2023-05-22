@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/baseLayout"
     tools:context=".MainActivity"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -18,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/date"
+            android:textColor="@color/black"
             android:textSize="40sp"/>
 
     </LinearLayout>
@@ -29,6 +31,9 @@
         android:layout_height="80dp"
         android:layout_margin="20dp"
         android:textSize="30sp"
+        android:hint="할 일을 입력해주세요"
+        android:textColor="@color/black"
+        android:textColorHint="#7C7C7C"
         android:id="@+id/inputText"/>
 
     <LinearLayout
@@ -40,12 +45,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Todo리스트"
+            android:textColor="@color/black"
             android:textSize="25sp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="(시간을 설정하면 알람이 울려요)        "
+            android:textColor="@color/black"
             android:textSize="12sp"/>
 
         <Button
@@ -54,7 +61,8 @@
             android:layout_height="40dp"
             android:layout_gravity="right"
             android:layout_marginRight="10dp"
-            android:backgroundTint="#CAC7C7"
+            android:backgroundTint="#100B0B"
+            android:textColor="@color/white"
             android:text="등록" />
     </LinearLayout>
 
@@ -69,31 +77,31 @@
             android:layout_margin="20dp"
             android:orientation="vertical"
             android:gravity="center">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <ImageButton
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:backgroundTint="@color/white"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/close"
-                    android:id="@+id/deleteBtn" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textSize="20sp"
-                        android:text="책읽기"
-                        android:gravity="center"/>
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal">-->
+<!--                <ImageButton-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:backgroundTint="@color/white"-->
+<!--                    android:scaleType="fitCenter"-->
+<!--                    android:src="@drawable/close"-->
+<!--                    android:id="@+id/deleteBtn" />-->
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:textSize="20sp"-->
+<!--                        android:text="책읽기"-->
+<!--                        android:gravity="center"/>-->
 
-                <Button
-                    android:layout_width="70dp"
-                    android:layout_height="50dp"
-                    android:text="완료"
-                    android:backgroundTint="#DCAAEF"/>
-            </LinearLayout>
+<!--                <Button-->
+<!--                    android:layout_width="70dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    android:text="완료"-->
+<!--                    android:backgroundTint="#DCAAEF"/>-->
+<!--            </LinearLayout>-->
 
         </LinearLayout>
 
@@ -114,14 +122,14 @@
             android:layout_marginRight="20dp"
             android:backgroundTint="#1CCFE6"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="지우기"
-            android:id="@+id/complete"
-            android:layout_gravity="right"
-            android:layout_marginRight="20dp"
-            android:backgroundTint="#1CCFE6"/>
+<!--        <Button-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="지우기"-->
+<!--            android:id="@+id/complete"-->
+<!--            android:layout_gravity="right"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:backgroundTint="#1CCFE6"/>-->
 
 
     </LinearLayout>

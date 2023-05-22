@@ -11,7 +11,7 @@ class TodoListDBHelper(context : Context) : SQLiteOpenHelper(context, "databases
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        db!!.execSQL("DROP TABLE todolist")
+        db!!.execSQL("DROP TABLE todolist;")
         onCreate(db)
     }
 }
