@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     val textParam = LinearLayout.LayoutParams(
-        650,
+        700,
         LinearLayout.LayoutParams.WRAP_CONTENT
     )
 

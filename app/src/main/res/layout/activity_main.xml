@@ -78,31 +78,6 @@
             android:layout_margin="20dp"
             android:orientation="vertical"
             android:gravity="center">
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="horizontal">-->
-<!--                <ImageButton-->
-<!--                    android:layout_width="50dp"-->
-<!--                    android:layout_height="50dp"-->
-<!--                    android:backgroundTint="@color/white"-->
-<!--                    android:scaleType="fitCenter"-->
-<!--                    android:src="@drawable/close"-->
-<!--                    android:id="@+id/deleteBtn" />-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:textSize="20sp"-->
-<!--                        android:text="책읽기"-->
-<!--                        android:gravity="center"/>-->
-
-<!--                <Button-->
-<!--                    android:layout_width="70dp"-->
-<!--                    android:layout_height="50dp"-->
-<!--                    android:text="완료"-->
-<!--                    android:backgroundTint="#DCAAEF"/>-->
-<!--            </LinearLayout>-->
 
         </LinearLayout>
 
@@ -120,6 +95,7 @@
             android:text="모두 지우기"
             android:id="@+id/initBtn"
             android:layout_gravity="right"
+            android:textColor="#FFFFFF"
             android:layout_marginRight="20dp"
             android:backgroundTint="#000000"/>
 
