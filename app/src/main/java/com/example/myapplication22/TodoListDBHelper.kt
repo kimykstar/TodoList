@@ -14,4 +14,5 @@ class TodoListDBHelper(context : Context) : SQLiteOpenHelper(context, "databases
         db!!.execSQL("DROP TABLE todolist;")
         onCreate(db)
     }
+
 }

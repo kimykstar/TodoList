@@ -1,13 +1,10 @@
 package com.example.myapplication22
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -16,10 +13,6 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.view.marginTop
-import com.google.android.material.snackbar.Snackbar
-import org.w3c.dom.Text
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -37,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var initBtn : Button
     lateinit var sqlDB : SQLiteDatabase
     lateinit var todoList : TodoList
+    lateinit var dbService : DBService
 
     val layoutParams = LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -55,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -66,23 +59,23 @@ class MainActivity : AppCompatActivity() {
         enterText = findViewById(R.id.inputText) // 리스트 입력칸
         initBtn = findViewById(R.id.initBtn)
         todoList = TodoList()
+        // db helper객체 생성
+        myHelper = TodoListDBHelper(this)
+        dbService = DBService(myHelper)
 
         createList(applicationContext)
 
-        // db helper객체 생성
-        myHelper = TodoListDBHelper(this)
+
 
         // 텍스트를 가져오고 Todo객체 생성 및 TodoList에 add
         // TextView 생성 및 X버튼, 완료 버튼 생성
         // X버튼과 완료 버튼에 Listener달기
         enterBtn.setOnClickListener {
-            sqlDB = myHelper.writableDatabase
             var value = enterText.text.toString()
             if(value.length > 0){
                 // 할일 중복
                 try{
-                    sqlDB.execSQL("INSERT INTO todolist VALUES ('" + value + "');")
-                    sqlDB.close()
+                    dbService.insertTodo(value)
                     Toast.makeText(applicationContext, "입력 완료", Toast.LENGTH_SHORT)
                     // LinearLayout생성
                     var ll = LinearLayout(this)
@@ -102,7 +95,6 @@ class MainActivity : AppCompatActivity() {
             sqlDB = myHelper.writableDatabase
             myHelper.onUpgrade(sqlDB, 1, 2)
             table.removeAllViews()
-            sqlDB.close()
         }
     }
 
@@ -127,19 +119,14 @@ class MainActivity : AppCompatActivity() {
         delete.setOnClickListener{
             //sql 삭제문
             var group = delete.parent as ViewGroup
-            sqlDB = myHelper.writableDatabase
             var t_view = group.getChildAt(1) as TextView
             var size = group.childCount
             var result = t_view is TextView
-            Log.i("count: ", "" + size)
-            Log.i("result : ", ""+result)
             var tt = t_view.text.toString()
-            Log.i("t_view : ", tt)
-            sqlDB.execSQL("DELETE FROM todolist WHERE list='" + tt + "';")
+            var dbService = DBService(myHelper)
+            dbService.deleteTodo(tt)
             // x버튼의 부모 레이아웃을 ViewGroup으로 받아 안에 속한 View들 모두 삭제
             group.removeAllViews()
-
-
         }
         return delete
     }
@@ -169,15 +156,10 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun createList(context : Context) {
         table = findViewById(R.id.table)
-        myHelper = TodoListDBHelper(context)
-        sqlDB = myHelper.readableDatabase
-        var cursor: Cursor
-        cursor = sqlDB.rawQuery("SELECT * FROM todolist;", null)
-
-        while(cursor.moveToNext()){
-            var todo = cursor.getString(0)
-            Log.i("list : ", todo)
-            table.addView(createTodo(todo))
+        var todoList = dbService.getAllTodo()
+        val iter = todoList.iterator()
+        while(iter.hasNext()){
+            table.addView(createTodo(iter.next().getTodo()))
         }
 
     }
