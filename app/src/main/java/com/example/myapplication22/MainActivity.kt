@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
     var dateText : LocalDate = LocalDate.now()
     @RequiresApi(Build.VERSION_CODES.O)
     lateinit var table : LinearLayout
-    lateinit var enterBtn : Button
+    lateinit var enterBtn : ImageButton
     lateinit var enterText : TextView
     lateinit var myHelper : TodoListDBHelper
     lateinit var initBtn : Button
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     )
 
     val textParam = LinearLayout.LayoutParams(
-        900,
+        650,
         LinearLayout.LayoutParams.WRAP_CONTENT
     )
 
@@ -133,13 +133,16 @@ class MainActivity : AppCompatActivity() {
 
     fun createSucBtn(value : String) : Button{
         val sucBtn = Button(this)
+        sucBtn.setBackgroundColor(Color.BLACK)
+        sucBtn.setTextColor(Color.WHITE)
+        sucBtn.textSize = 15f
         sucBtn.text = "완료"
         return sucBtn
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun createTodo(value : String) : LinearLayout {
-        val ll : LinearLayout = LinearLayout(this)
+        val ll = LinearLayout(this)
         val btn = createDelBtn(value)
         val text = createTextView(value)
         val sucbtn = createSucBtn(value)
