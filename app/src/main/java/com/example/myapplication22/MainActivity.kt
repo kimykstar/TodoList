@@ -1,6 +1,7 @@
 package com.example.myapplication22
 
 import android.content.Context
+import android.content.DialogInterface
 import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
@@ -11,8 +12,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.core.view.marginLeft
+import androidx.core.view.marginTop
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -92,9 +97,13 @@ class MainActivity : AppCompatActivity() {
 
 
         initBtn.setOnClickListener {
-            sqlDB = myHelper.writableDatabase
-            myHelper.onUpgrade(sqlDB, 1, 2)
-            table.removeAllViews()
+            var builder : AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("초기화").setMessage("해야할 목록을 초기화 하시겠습니까?")
+            builder.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+                sqlDB = myHelper.writableDatabase
+                myHelper.onUpgrade(sqlDB, 1, 2)
+                table.removeAllViews()
+            })
         }
     }
 
@@ -114,14 +123,12 @@ class MainActivity : AppCompatActivity() {
         val delete : ImageButton = ImageButton(this)
         delete.setImageResource(R.drawable.close)
         delete.scaleType= ImageView.ScaleType.FIT_CENTER
-        delete.setBackgroundColor(Color.WHITE)
+        delete.setBackgroundResource(R.drawable.imgbtn_layout)
         delete.layoutParams = imgBtnParams
         delete.setOnClickListener{
             //sql 삭제문
             var group = delete.parent as ViewGroup
             var t_view = group.getChildAt(1) as TextView
-            var size = group.childCount
-            var result = t_view is TextView
             var tt = t_view.text.toString()
             var dbService = DBService(myHelper)
             dbService.deleteTodo(tt)
@@ -147,11 +154,13 @@ class MainActivity : AppCompatActivity() {
         val text = createTextView(value)
         val sucbtn = createSucBtn(value)
         ll.orientation=LinearLayout.HORIZONTAL
+        layoutParams.setMargins(10,30, 10, 0)
         ll.layoutParams = layoutParams
+        ll.setBackgroundResource(R.drawable.border_layout)
         ll.addView(btn)
         ll.addView(text)
         ll.addView(sucbtn)
-        ll.setBackgroundResource(R.drawable.round_border)
+
 
         return ll
     }
