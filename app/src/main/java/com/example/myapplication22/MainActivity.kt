@@ -2,7 +2,6 @@ package com.example.myapplication22
 
 import android.content.Context
 import android.content.DialogInterface
-import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
@@ -12,12 +11,9 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.marginLeft
-import androidx.core.view.marginTop
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -34,7 +30,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var myHelper : TodoListDBHelper
     lateinit var initBtn : Button
     lateinit var sqlDB : SQLiteDatabase
-    lateinit var todoList : TodoList
     lateinit var dbService : DBService
 
     val layoutParams = LinearLayout.LayoutParams(
@@ -47,8 +42,13 @@ class MainActivity : AppCompatActivity() {
         LinearLayout.LayoutParams.MATCH_PARENT,
     )
 
+    val alarmBtnParams = LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT
+    )
+
     val textParam = LinearLayout.LayoutParams(
-        700,
+        LinearLayout.LayoutParams.MATCH_PARENT,
         LinearLayout.LayoutParams.WRAP_CONTENT
     )
 
@@ -63,7 +63,6 @@ class MainActivity : AppCompatActivity() {
         enterBtn = findViewById(R.id.enter)
         enterText = findViewById(R.id.inputText) // 리스트 입력칸
         initBtn = findViewById(R.id.initBtn)
-        todoList = TodoList()
         // db helper객체 생성
         myHelper = TodoListDBHelper(this)
         dbService = DBService(myHelper)
@@ -104,6 +103,8 @@ class MainActivity : AppCompatActivity() {
                 myHelper.onUpgrade(sqlDB, 1, 2)
                 table.removeAllViews()
             })
+            builder.setNegativeButton("취소", null)
+            builder.show()
         }
     }
 
@@ -130,10 +131,17 @@ class MainActivity : AppCompatActivity() {
             var group = delete.parent as ViewGroup
             var t_view = group.getChildAt(1) as TextView
             var tt = t_view.text.toString()
-            var dbService = DBService(myHelper)
-            dbService.deleteTodo(tt)
-            // x버튼의 부모 레이아웃을 ViewGroup으로 받아 안에 속한 View들 모두 삭제
-            group.removeAllViews()
+            var builder : AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("목록 삭제").setMessage("'" + tt + "' 를 삭제하시겠습니까?")
+            builder.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+                var dbService = DBService(myHelper)
+                dbService.deleteTodo(tt)
+                // x버튼의 부모 레이아웃을 ViewGroup으로 받아 안에 속한 View들 모두 삭제
+                group.removeAllViews()
+            })
+            builder.setNegativeButton("취소", null)
+            builder.show()
+
         }
         return delete
     }
@@ -142,8 +150,17 @@ class MainActivity : AppCompatActivity() {
         val sucBtn = Button(this)
         sucBtn.setBackgroundColor(Color.BLACK)
         sucBtn.setTextColor(Color.WHITE)
+        alarmBtnParams.setMargins(-80, 0, 0, 0)
+        sucBtn.layoutParams = alarmBtnParams
         sucBtn.textSize = 15f
-        sucBtn.text = "완료"
+        sucBtn.text = "알람"
+        sucBtn.setOnClickListener {
+            // Timpicker Dialog를 이용하여 시간을 선택
+            var t_fragment = TimePickerFragment()
+            t_fragment.setContext(this)
+            t_fragment.setMessage(value)
+            t_fragment.show(supportFragmentManager, "timePicker")
+        }
         return sucBtn
     }
 

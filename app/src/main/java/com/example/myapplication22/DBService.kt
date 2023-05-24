@@ -2,44 +2,64 @@ package com.example.myapplication22
 
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 
 class DBService{
     lateinit var myHelper : TodoListDBHelper
     lateinit var writeSqlDB :SQLiteDatabase
     lateinit var readSqlDB :SQLiteDatabase
-    var todoList = TodoList()
+    var todoList : ArrayList<Todo> = ArrayList<Todo>()
 
+    // SQLiteOpenHelper클래스의 생성자는 context를 받아야 하기 때문에
+    // 아예 인스턴스를 받아서 생성자에 대입한다.
     constructor(myHelper : TodoListDBHelper){
         this.myHelper = myHelper
+        // 읽기 및 쓰기 DB를 연다.
         writeSqlDB = myHelper.writableDatabase
         readSqlDB = myHelper.readableDatabase
     }
 
-    // 모든 Todo를 가져와 todoList에 넣는다.
+    // 모든 Todo의 목록들을 데이터베이스로부터 가져와 List<Todo>자료형에 넣어 반환
     fun getAllTodo() : List<Todo> {
         var cursor : Cursor
-        todoList.removeAllTodo()
         cursor = readSqlDB.rawQuery("SELECT * FROM todolist;", null)
-
         while(cursor.moveToNext()){
-            var todo : Todo = Todo(cursor.getString(0))
-            todoList.addTodo(todo)
+            var todo : Todo
+            todo = Todo(cursor.getString(0), cursor.getInt(1), cursor.getInt(2))
+            todoList.add(todo)
         }
-        return todoList.getAllList()
+        return todoList
     }
 
-    // Todo하나 삭제
+    // TodoList의 목록 중 지정한 Todo하나를 삭제한다.
     fun deleteTodo(todo : String){
         writeSqlDB.execSQL("DELETE FROM todolist WHERE list='" + todo + "';")
-        todoList.removeTodo(Todo(todo))
     }
 
-    // Todo하나 삽입
+    // TodoList목록에 Todo하나를 삽입
     fun insertTodo(todo : String){
-        writeSqlDB.execSQL("INSERT INTO todolist VALUES ('" + todo + "');")
-        todoList.addTodo(Todo(todo))
+        writeSqlDB.execSQL("INSERT INTO todolist(list) VALUES ('" + todo + "');")
     }
 
+    // 알람의 시간을 지정 시 시간정보(시, 분)을 데이터베이스에 넣는다.
+    fun insertTime(list : String, hour : Int, min : Int){
+        writeSqlDB.execSQL("update todolist set hour = " + hour + " where list = " + list)
+        writeSqlDB.execSQL("update todolist set minute = " + min + " where list = " + list)
+    }
+
+    fun getTime(list : String) : String{
+        var cursor = readSqlDB.rawQuery("SELECT * FROM todolist WHERE list=" + list + ";", null)
+        var time = ""
+        while(cursor.moveToNext()){
+            time += cursor.getString(0)
+            Log.i("list : ", list)
+            time += " " + cursor.getInt(1).toString()
+            Log.i("hour", time)
+            time += " " + cursor.getInt(2).toString()
+            Log.i("min", time)
+        }
+        return time
+    }
 
 }
