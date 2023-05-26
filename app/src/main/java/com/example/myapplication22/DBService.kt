@@ -44,8 +44,8 @@ class DBService{
 
     // 알람의 시간을 지정 시 시간정보(시, 분)을 데이터베이스에 넣는다.
     fun insertTime(list : String, hour : Int, min : Int){
-        writeSqlDB.execSQL("update todolist set hour = " + hour + " where list = " + list)
-        writeSqlDB.execSQL("update todolist set minute = " + min + " where list = " + list)
+        writeSqlDB.execSQL("update todolist set hour=" + hour + " where list='" + list + "'")
+        writeSqlDB.execSQL("update todolist set minute=" + min + " where list='" + list + "'")
     }
 
     fun getTime(list : String) : String{
