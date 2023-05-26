@@ -13,38 +13,8 @@ import androidx.core.app.NotificationCompat
 
 class AlarmReceiver : BroadcastReceiver(){
 
-    private lateinit var manager : NotificationManager
-    private lateinit var builder : NotificationCompat.Builder
-
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context?, intent: Intent?) {
-        manager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(
-            NotificationChannel(
-                "channel",
-                "channel1",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-        )
-        builder = NotificationCompat.Builder(context, "channel");
 
-        val intent2 = Intent(context, AlarmService::class.java)
-        val requestCode = intent?.extras!!.getInt("alarm_rqCode")
-        val title = intent.extras!!.getString("content")
-
-        val pendingIntent = if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.S){
-            PendingIntent.getActivity(context,requestCode,intent2,PendingIntent.FLAG_IMMUTABLE); //Activity를 시작하는 인텐트 생성
-        }else {
-            PendingIntent.getActivity(context,requestCode,intent2,PendingIntent.FLAG_UPDATE_CURRENT);
-        }
-
-        val notification = builder.setContentTitle(title)
-            .setContentText("SCHEDULE MANAGER")
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-            .build()
-
-        manager.notify(1, notification)
     }
 
 
