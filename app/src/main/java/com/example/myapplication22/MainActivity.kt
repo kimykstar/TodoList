@@ -1,7 +1,13 @@
 package com.example.myapplication22
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.FLAG_MUTABLE
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
@@ -16,8 +22,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
     lateinit var date : TextView
     @RequiresApi(Build.VERSION_CODES.O)
     val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
@@ -158,7 +165,7 @@ class MainActivity : AppCompatActivity() {
             // Timpicker Dialog를 이용하여 시간을 선택
             var t_fragment = TimePickerFragment()
             t_fragment.setContext(this)
-            t_fragment.setMessage(value)
+//            t_fragment.setMessage(value)
             t_fragment.show(supportFragmentManager, "timePicker")
         }
         return sucBtn
@@ -191,6 +198,36 @@ class MainActivity : AppCompatActivity() {
             table.addView(createTodo(iter.next().getTodo()))
         }
 
+    }
+
+    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        // DB에 시, 분을 넣는다.
+//        dbService.insertTime(message, hourOfDay, minute)
+
+        var c = Calendar.getInstance()
+        c.set(Calendar.HOUR_OF_DAY, hourOfDay)
+        c.set(Calendar.MINUTE, minute)
+        c.set(Calendar.SECOND, 0)
+
+        Toast.makeText(applicationContext, String.format("%d시 %d분에 알람을 설정하였습니다.", hourOfDay, minute), Toast.LENGTH_SHORT)
+
+        // 알람 설정
+        startAlarm(c)
+    }
+
+    private fun startAlarm(c: Calendar) {
+        // 알람매니저 선언
+        var alarmManager : AlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        var intent = Intent(this, AlarmReceiver::class.java)
+
+        var pendingIntent = PendingIntent.getBroadcast(this, 1, intent, FLAG_MUTABLE)
+
+        // 설정 시간이 현재시간 이후라면 설정
+        if(c.before(Calendar.getInstance())){
+            c.add(Calendar.DATE, 1)
+        }
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.timeInMillis, pendingIntent)
     }
 
 }
