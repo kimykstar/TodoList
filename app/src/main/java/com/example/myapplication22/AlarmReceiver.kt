@@ -8,14 +8,15 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 
 
-class AlarmReceiver : BroadcastReceiver(){
+class AlarmReceiver() : BroadcastReceiver(){
 
     lateinit var notificationManager : NotificationManager
 
     override fun onReceive(context: Context?, intent: Intent?) {
+        var text = intent!!.getStringExtra("text")
         var notificationHelper : NotificationHelper = NotificationHelper(context)
 
-        var nb : NotificationCompat.Builder = notificationHelper.getChannelNotification()
+        var nb : NotificationCompat.Builder = notificationHelper.getChannelNotification(text!!)
 
         // 알림 호출
         notificationHelper.getManager().notify(1, nb.build())

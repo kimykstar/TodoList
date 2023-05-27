@@ -10,6 +10,9 @@ import android.os.Build
 import android.os.Bundle
 import android.text.format.DateFormat
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -17,7 +20,7 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.DialogFragment
 import java.util.Calendar
 
-class TimePickerFragment : DialogFragment(){
+class TimePickerFragment() : DialogFragment(){
     lateinit var cont : Context
     lateinit var myHelper : TodoListDBHelper
     lateinit var dbService : DBService
@@ -42,20 +45,26 @@ class TimePickerFragment : DialogFragment(){
         return TimePickerDialog(activity, activity as TimePickerDialog.OnTimeSetListener, hour, minute, DateFormat.is24HourFormat(activity))
     }
 
-//    // user에 의해 time이 설정된 경우(시, 분)
-//    @RequiresApi(Build.VERSION_CODES.O)
 //    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
 //        // DB에 시, 분을 넣는다.
-//        Log.i("child : ", message)
-//        dbService.insertTime(message, hourOfDay, minute)
+////        dbService.insertTime(message, hourOfDay, minute)
 //
 //        var c = Calendar.getInstance()
 //        c.set(Calendar.HOUR_OF_DAY, hourOfDay)
 //        c.set(Calendar.MINUTE, minute)
 //        c.set(Calendar.SECOND, 0)
 //
-//        Toast.makeText(cont, String.format("%d시 %d분에 알람을 설정하였습니다.", hourOfDay, minute), Toast.LENGTH_SHORT)
+//        val group = btn.parent as ViewGroup
+//        var textView = group.getChildAt(1) as TextView
 //
+////        -------------------------
+//        // listViews를 이용해서 text읽어오기 추가
+//        var text = textView.text
+////        ---------------------------
+//        Toast.makeText(cont, String.format("%s를 %d시 %d분에 알람을 설정하였습니다.", text, hourOfDay, minute), Toast.LENGTH_SHORT)
+////        ------------------------
+////        알람버튼을 알람 해제 버튼과 알람 시간 띄우기
+//        //        -------------------------
 //        // 알람 설정
 //        startAlarm(c)
 //    }

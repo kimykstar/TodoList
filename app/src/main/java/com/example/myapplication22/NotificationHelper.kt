@@ -42,10 +42,10 @@ class NotificationHelper (base: Context?) : ContextWrapper(base){
     }
 
     // Notification 설정
-    fun getChannelNotification() : NotificationCompat.Builder{
+    fun getChannelNotification(text : String) : NotificationCompat.Builder{
         return NotificationCompat.Builder(applicationContext, channelID)
-            .setContentTitle("제목")
-            .setContentText("알람입니다.")
+            .setContentTitle("Todo Alarm")
+            .setContentText(String.format("%s를 해야할 시간입니다.", text))
             .setSmallIcon(R.drawable.ic_launcher_background)
     }
 }

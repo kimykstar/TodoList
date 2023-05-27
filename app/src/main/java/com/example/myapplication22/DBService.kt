@@ -39,27 +39,29 @@ class DBService{
 
     // TodoList목록에 Todo하나를 삽입
     fun insertTodo(todo : String){
-        writeSqlDB.execSQL("INSERT INTO todolist(list) VALUES ('" + todo + "');")
+        writeSqlDB.execSQL("INSERT INTO todolist VALUES ('" + todo + "', -1, -1);")
     }
 
     // 알람의 시간을 지정 시 시간정보(시, 분)을 데이터베이스에 넣는다.
     fun insertTime(list : String, hour : Int, min : Int){
         writeSqlDB.execSQL("update todolist set hour=" + hour + " where list='" + list + "'")
+        Log.i("hourInsert", hour.toString())
         writeSqlDB.execSQL("update todolist set minute=" + min + " where list='" + list + "'")
+        Log.i("mInsert", min.toString())
     }
 
     fun getTime(list : String) : String{
         var cursor = readSqlDB.rawQuery("SELECT * FROM todolist WHERE list=" + list + ";", null)
         var time = ""
         while(cursor.moveToNext()){
-            time += cursor.getString(0)
-            Log.i("list : ", list)
-            time += " " + cursor.getInt(1).toString()
-            Log.i("hour", time)
+            time += cursor.getInt(1).toString()
+
             time += " " + cursor.getInt(2).toString()
-            Log.i("min", time)
+            Log.i("hourDB", time)
         }
         return time
     }
+
+
 
 }

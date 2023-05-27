@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
@@ -24,7 +26,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
+class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener{
     lateinit var date : TextView
     @RequiresApi(Build.VERSION_CODES.O)
     val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")
@@ -38,6 +40,8 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
     lateinit var initBtn : Button
     lateinit var sqlDB : SQLiteDatabase
     lateinit var dbService : DBService
+    lateinit var listViews : ArrayList<LinearLayout>
+    lateinit var clickBtn : Button
 
     val layoutParams = LinearLayout.LayoutParams(
         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -59,6 +63,11 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
         LinearLayout.LayoutParams.WRAP_CONTENT
     )
 
+    val frameParam = FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.WRAP_CONTENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT
+    )
+
     @RequiresApi(Build.VERSION_CODES.O)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +82,7 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
         // db helper객체 생성
         myHelper = TodoListDBHelper(this)
         dbService = DBService(myHelper)
+        listViews = ArrayList<LinearLayout>()
 
         createList(applicationContext)
 
@@ -109,6 +119,7 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
                 sqlDB = myHelper.writableDatabase
                 myHelper.onUpgrade(sqlDB, 1, 2)
                 table.removeAllViews()
+                listViews.removeAll(listViews)
             })
             builder.setNegativeButton("취소", null)
             builder.show()
@@ -143,8 +154,16 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
             builder.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
                 var dbService = DBService(myHelper)
                 dbService.deleteTodo(tt)
+                // 목록에서 해당 linearlayout을 삭제
+                var iter = listViews.iterator()
+                while(iter.hasNext()){
+                    if(iter.next() == group){
+                        listViews.remove(group)
+                    }
+                }
                 // x버튼의 부모 레이아웃을 ViewGroup으로 받아 안에 속한 View들 모두 삭제
                 group.removeAllViews()
+
             })
             builder.setNegativeButton("취소", null)
             builder.show()
@@ -157,18 +176,59 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
         val sucBtn = Button(this)
         sucBtn.setBackgroundColor(Color.BLACK)
         sucBtn.setTextColor(Color.WHITE)
-        alarmBtnParams.setMargins(-80, 0, 0, 0)
         sucBtn.layoutParams = alarmBtnParams
         sucBtn.textSize = 15f
-        sucBtn.text = "알람"
+        sucBtn.text = "알람 설정"
+
         sucBtn.setOnClickListener {
             // Timpicker Dialog를 이용하여 시간을 선택
             var t_fragment = TimePickerFragment()
             t_fragment.setContext(this)
-//            t_fragment.setMessage(value)
+            clickBtn = sucBtn
+            // 만약 db에 시간이 설정되어 있다면 invisible
+
             t_fragment.show(supportFragmentManager, "timePicker")
         }
         return sucBtn
+    }
+
+    fun createAlarmCancelBtn(value : String) : Button{
+        var cancelBtn = Button(this)
+        cancelBtn.setBackgroundColor(Color.BLACK)
+        cancelBtn.setTextColor(Color.WHITE)
+        cancelBtn.text = "알람 해제"
+        dbService.getTime(value)
+        // db에 시간이 설정되어있지 않다면 invisible
+        cancelBtn.setOnClickListener {var builder : AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("알람 해제").setMessage(value + "알람을 해제하시겠습니까?")
+            builder.setPositiveButton("확인", DialogInterface.OnClickListener { dialog, which ->
+                dbService.insertTime(value, -1, -1)
+            })
+            builder.setNegativeButton("취소", null)
+        }
+
+        return cancelBtn
+    }
+
+    fun createFrameLayout(sucbtn : Button, cancelBtn : Button, value : String) : FrameLayout{
+        val frame = FrameLayout(this)
+        frame.layoutParams = frameParam
+        frame.addView(sucbtn)
+        frame.addView(cancelBtn)
+        var time = dbService.getTime(value)
+        var times = time.split(" ")
+        Log.i("hour", times[0])
+        Log.i("minute", times[1])
+        // 알람이 설정되지 않은 경우
+        if(times[0].equals("-1") && times[1].equals("-1")){
+            sucbtn.visibility = VISIBLE
+            cancelBtn.visibility = INVISIBLE
+        }else{
+            sucbtn.visibility = INVISIBLE
+            cancelBtn.visibility = VISIBLE
+        }
+
+        return frame
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -177,14 +237,21 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
         val btn = createDelBtn(value)
         val text = createTextView(value)
         val sucbtn = createSucBtn(value)
+        val cancelBtn = createAlarmCancelBtn(value)
+        val frame = createFrameLayout(sucbtn, cancelBtn, value)
+
         ll.orientation=LinearLayout.HORIZONTAL
         layoutParams.setMargins(10,30, 10, 0)
+        frameParam.setMargins(-100, 0, 0, 0)
         ll.layoutParams = layoutParams
         ll.setBackgroundResource(R.drawable.border_layout)
         ll.addView(btn)
+        ll.setTag(text)
         ll.addView(text)
-        ll.addView(sucbtn)
-
+        ll.setTag(frame)
+        ll.addView(frame)
+        // 목록들의 view를 한번에 관리하도록 listViews에 linearlayout에 넣는다.
+        listViews.add(ll)
 
         return ll
     }
@@ -197,29 +264,20 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
         while(iter.hasNext()){
             table.addView(createTodo(iter.next().getTodo()))
         }
-
     }
 
-    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-        // DB에 시, 분을 넣는다.
-//        dbService.insertTime(message, hourOfDay, minute)
+    // --------------------------------------
+    // 해결해야할거 :
+    // 1. 알람을 설정하고 버튼을 알람 해제로 변경되도록 만들어야 함
+    // 2. 알람이 울린 뒤 버튼이 알람 설정 버튼으로 변경되도록 해야 함
+    // 3. DB에 시간 값 잘 들어갔나 확인 꺼지면 갑자기 시간정보가 없어짐..
 
-        var c = Calendar.getInstance()
-        c.set(Calendar.HOUR_OF_DAY, hourOfDay)
-        c.set(Calendar.MINUTE, minute)
-        c.set(Calendar.SECOND, 0)
-
-        Toast.makeText(applicationContext, String.format("%d시 %d분에 알람을 설정하였습니다.", hourOfDay, minute), Toast.LENGTH_SHORT)
-
-        // 알람 설정
-        startAlarm(c)
-    }
-
-    private fun startAlarm(c: Calendar) {
+    private fun startAlarm(c: Calendar, text : String, frame : FrameLayout) {
         // 알람매니저 선언
         var alarmManager : AlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         var intent = Intent(this, AlarmReceiver::class.java)
+        intent.putExtra("text", text)
 
         var pendingIntent = PendingIntent.getBroadcast(this, 1, intent, FLAG_MUTABLE)
 
@@ -228,6 +286,35 @@ class MainActivity : AppCompatActivity(),  TimePickerDialog.OnTimeSetListener {
             c.add(Calendar.DATE, 1)
         }
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.timeInMillis, pendingIntent)
+        frame.getChildAt(0).visibility = VISIBLE
+        frame.getChildAt(1).visibility = INVISIBLE
+        dbService.insertTime(text, -1, -1)
     }
+
+    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        var c = Calendar.getInstance()
+        c.set(Calendar.HOUR_OF_DAY, hourOfDay)
+        c.set(Calendar.MINUTE, minute)
+        c.set(Calendar.SECOND, 0)
+
+        val group = clickBtn.parent.parent as LinearLayout
+        var textView = group.getChildAt(1) as TextView
+        var frame = group.getChildAt(2) as FrameLayout
+
+        var text = textView.text
+
+        val alarmBtn = frame.getChildAt(0)
+        val alarmCBtn = frame.getChildAt(1)
+
+        alarmBtn.visibility = INVISIBLE
+        alarmCBtn.visibility = VISIBLE
+        // DB에 시, 분을 넣는다.
+        dbService.insertTime(text as String, hourOfDay, minute)
+
+        Toast.makeText(applicationContext, String.format("%s를 %d시 %d분에 알람을 설정하였습니다.", text, hourOfDay, minute), Toast.LENGTH_SHORT)
+
+        startAlarm(c, text.toString(), frame)
+    }
+
 
 }
