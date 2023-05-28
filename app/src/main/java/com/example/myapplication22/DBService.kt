@@ -51,7 +51,7 @@ class DBService{
     }
 
     fun getTime(list : String) : String{
-        var cursor = readSqlDB.rawQuery("SELECT * FROM todolist WHERE list=" + list + ";", null)
+        var cursor = readSqlDB.rawQuery("SELECT * FROM todolist WHERE list='" + list + "';", null)
         var time = ""
         while(cursor.moveToNext()){
             time += cursor.getInt(1).toString()
