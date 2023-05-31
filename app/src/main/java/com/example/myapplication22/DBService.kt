@@ -62,6 +62,20 @@ class DBService{
         return time
     }
 
+    fun getAllTimes() : List<String>{
+        var cursor = readSqlDB.rawQuery("SELECT hour, minute FROM todolist", null)
+        var time = ""
+        var list = ArrayList<String>()
+        while(cursor.moveToNext()){
+            time += cursor.getInt(0).toString()
+            time += " " + cursor.getInt(1).toString()
+            list.add(time)
+        }
+        return list
+
+
+    }
+
 
 
 }
