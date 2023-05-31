@@ -37,6 +37,7 @@
             android:layout_weight="1"
             android:hint="할 일을 입력해주세요"
             android:textColor="@color/black"
+            android:layout_marginLeft="15dp"
             android:textColorHint="#7C7C7C"
             android:id="@+id/inputText"/>
 
@@ -44,10 +45,11 @@
             android:id="@+id/enter"
             android:src="@drawable/check"
             android:layout_width="match_parent"
-            android:layout_weight="4"
+            android:layout_weight="5"
             android:layout_height="80dp"
-            android:backgroundTint="#FFFFFF"
+            android:background="@color/white"
             android:scaleType="fitCenter"
+            android:layout_marginRight="10dp"
             android:textColor="@color/white"
             android:text="등록" />
     </LinearLayout>

@@ -17,9 +17,9 @@ class AlarmReceiver() : BroadcastReceiver(){
         var notificationHelper : NotificationHelper = NotificationHelper(context)
 
         var nb : NotificationCompat.Builder = notificationHelper.getChannelNotification(text!!)
-
+        var id = 0
         // 알림 호출
-        notificationHelper.getManager().notify(1, nb.build())
+        notificationHelper.getManager().notify(id++, nb.build())
     }
 
 
